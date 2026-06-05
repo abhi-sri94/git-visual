@@ -154,7 +154,7 @@ export const GitVisualizer: FC<GitVisualizerProps> = ({
           width="100%"
           height={svgHeight}
           style={{ maxWidth: '600px', overflow: 'visible' }}
-          viewBox="-250 0 500 htmlWidth"
+          viewBox={`-250 0 500 ${svgHeight}`}
         >
           <defs>
             <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
@@ -275,17 +275,19 @@ export const GitVisualizer: FC<GitVisualizerProps> = ({
 
                 {/* Branch reference tags */}
                 {hasLabels && (
-                  <g transform={`translate(${coord.x - 110}, ${coord.y - 10})`}>
+                  <g transform={`translate(${coord.x}, ${coord.y - 10})`}>
                     {pointingBranches.map((branch, bIdx) => {
                       const isActiveBr = branch.name === activeBranch;
+                      const labelText = branch.name + (isActiveBr ? ' (HEAD)' : '');
+                      const labelWidth = Math.max(70, labelText.length * 5.5 + 10);
                       return (
-                        <g key={branch.name} transform={`translate(0, ${bIdx * 16})`}>
+                        <g key={branch.name} transform={`translate(${-labelWidth - 15}, ${bIdx * 16})`}>
                           {/* Label background */}
                           <rect
                             x="0"
                             y="0"
-                            width="90"
-                            height="13"
+                            width={labelWidth}
+                            height="14"
                             rx="3"
                             fill={isActiveBr ? '#052e16' : '#1e1b4b'}
                             stroke={isActiveBr ? '#39ff14' : '#bd00ff'}
@@ -293,16 +295,15 @@ export const GitVisualizer: FC<GitVisualizerProps> = ({
                           />
                           {/* Label Text */}
                           <text
-                            x="45"
-                            y="9"
+                            x={labelWidth / 2}
+                            y="10"
                             fill={isActiveBr ? '#39ff14' : '#e0e7ff'}
                             fontSize="8"
                             fontFamily="monospace"
                             fontWeight="bold"
                             textAnchor="middle"
                           >
-                            {branch.name.length > 15 ? `${branch.name.slice(0, 12)}...` : branch.name}
-                            {isActiveBr && ' (HEAD)'}
+                            {labelText}
                           </text>
                         </g>
                       );
