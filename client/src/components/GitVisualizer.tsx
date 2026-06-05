@@ -25,12 +25,12 @@ export const GitVisualizer: FC<GitVisualizerProps> = ({
   const layout = useMemo(() => {
     const commitCoords: Record<string, { x: number; y: number; column: number }> = {};
     const columnNextAvailableY: Record<number, number> = {};
-    
+
     // Assign columns to branches to keep tracks consistent
     // E.g., main is 0, others are 1, 2, 3...
     const branchNames = Object.keys(branches);
     const branchToCol: Record<string, number> = {};
-    
+
     // Always put main in the center (column 0)
     branchToCol['main'] = 0;
     let colIdx = 1;
@@ -55,12 +55,12 @@ export const GitVisualizer: FC<GitVisualizerProps> = ({
       } else {
         const firstParentId = commit.parentIds[0];
         const parentCoord = commitCoords[firstParentId];
-        
+
         if (parentCoord) {
           // If first parent's column hasn't been used at this Y level yet
           const parentCol = parentCoord.column;
           const lastY = columnNextAvailableY[parentCol] || 0;
-          
+
           if (y > lastY) {
             column = parentCol;
           } else {
@@ -148,7 +148,7 @@ export const GitVisualizer: FC<GitVisualizerProps> = ({
     <div className="visualizer-container custom-scrollbar">
       {/* Visual Ambient Scanline Grid background */}
       <div className="scanline-overlay" />
-      
+
       <div className="visualizer-content">
         <svg
           width="100%"

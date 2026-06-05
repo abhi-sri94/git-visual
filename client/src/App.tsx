@@ -5,11 +5,11 @@ import { GitVisualizer } from './components/GitVisualizer';
 import { Terminal } from './components/Terminal';
 import { LevelInstructions } from './components/LevelInstructions';
 import { levels } from './utils/levels';
-import { 
-  getInitialState, 
-  runGitCommand, 
-  checkTutorialTarget, 
-  type GitState, 
+import {
+  getInitialState,
+  runGitCommand,
+  checkTutorialTarget,
+  type GitState,
   type Commit,
   type Branch
 } from './utils/gitEngine';
@@ -85,7 +85,7 @@ export default function App() {
   const [savedRepos, setSavedRepos] = useState<SavedRepo[]>([]);
   const [activeRepoId, setActiveRepoId] = useState<string | null>(null);
   const [shareId, setShareId] = useState<string | null>(null);
-  
+
   // Loading states
   const [loadingSave, setLoadingSave] = useState(false);
   const [loadingShare, setLoadingShare] = useState(false);
@@ -115,9 +115,9 @@ export default function App() {
     try {
       const res = await fetch(`${API_BASE_URL}/api/repos/shared/${hash}`);
       if (!res.ok) throw new Error('Shared repository not found');
-      
+
       const data = await res.json();
-      
+
       // Update states
       setGitState({
         repoName: data.name,
@@ -257,7 +257,7 @@ export default function App() {
   const handleExecuteCommand = (command: string) => {
     // 1. Run engine transition
     const { newState, output, success } = runGitCommand(gitState, command);
-    
+
     // Play sound based on result
     if (success) {
       if (command.includes('commit')) {
@@ -329,12 +329,12 @@ export default function App() {
 
       playSound('success');
       setActiveRepoId(data.repo._id);
-      
+
       // Update list
       if (token) {
         fetchSavedRepos(token);
       }
-      
+
       setTerminalHistory(prev => [
         ...prev,
         { type: 'output', text: `SYSTEM SAFE: Repository "${sandboxName}" saved successfully in MongoDB.` }
@@ -415,12 +415,12 @@ export default function App() {
 
       playSound('success');
       setShareId(data.shareId);
-      
+
       setTerminalHistory(prev => [
         ...prev,
-        { 
-          type: 'output', 
-          text: `SYSTEM PUBLISHED: Public share code established: "${data.shareId}".\nClick "Copy Share Link" above to send to recruiters.` 
+        {
+          type: 'output',
+          text: `SYSTEM PUBLISHED: Public share code established: "${data.shareId}".\nClick "Copy Share Link" above to send to recruiters.`
         }
       ]);
     } catch (err) {
@@ -463,7 +463,7 @@ export default function App() {
           console.error('Failed to restore sandbox autosave on mode change:', e);
         }
       }
-      
+
       // Empty sandbox state fallback
       setGitState(getInitialState());
       setSandboxName('sandbox-repo');
@@ -516,22 +516,22 @@ export default function App() {
 
       {/* Main Workspace Frame */}
       <div className="workspace-frame">
-        
+
         {/* Mobile-Only Panel Tab Controls */}
         <div className="mobile-tabs">
-          <button 
+          <button
             onClick={() => setActiveTab('instructions')}
             className={`tab-btn ${activeTab === 'instructions' ? 'active' : ''}`}
           >
             Objectives
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('visualizer')}
             className={`tab-btn ${activeTab === 'visualizer' ? 'active' : ''}`}
           >
             Visualizer
           </button>
-          <button 
+          <button
             onClick={() => setActiveTab('terminal')}
             className={`tab-btn ${activeTab === 'terminal' ? 'active' : ''}`}
           >
@@ -561,7 +561,7 @@ export default function App() {
               selectedCommit={selectedCommit}
             />
           </div>
-          
+
           {/* Commit Inspector Detail Drawer */}
           {selectedCommit && (
             <div className="commit-inspector glass-panel">
@@ -574,13 +574,24 @@ export default function App() {
                   Author: {selectedCommit.author} | Parents: {selectedCommit.parentIds.join(', ') || 'None'}
                 </div>
               </div>
-              <button 
-                onClick={() => setSelectedCommit(null)}
-                className="btn-cyber-cyan"
-                style={{ fontSize: '10px', padding: '4px 8px' }}
-              >
-                Close
-              </button>
+              <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+                <button
+                  onClick={() => {
+                    handleExecuteCommand(`git checkout ${selectedCommit.id}`);
+                  }}
+                  className="btn-cyber-green"
+                  style={{ fontSize: '10px', padding: '4px 8px', fontWeight: 'bold' }}
+                >
+                  Checkout Commit
+                </button>
+                <button
+                  onClick={() => setSelectedCommit(null)}
+                  className="btn-cyber-cyan"
+                  style={{ fontSize: '10px', padding: '4px 8px' }}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           )}
         </div>
